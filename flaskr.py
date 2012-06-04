@@ -11,6 +11,7 @@ DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
 PASSWORD = 'default'
+FOLDERFILE = './static/folders'
 
 #Create the application
 app = Flask(__name__)
@@ -39,11 +40,11 @@ def teardown_request(exception):
     if hasattr(g, 'db'):
 	g.db.close()
 
-@app.route('/')
-def show_entries():
-    cur = g.db.execute('select title, text from entries order by id desc')
-    entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
-    return render_template('show_entries.html', entries=entries)
+        #@app.route('/')
+#def show_entries():
+    #cur = g.db.execute('select title, text from entries order by id desc')
+    #entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+    #return render_template('show_entries.html', entries=entries)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
@@ -65,20 +66,43 @@ def login():
 	else:
 	    session['logged_in'] = True
 	    flash('You were logged in')
-	    return redirect(url_for('show_entries'))
+	    return redirect(url_for('scan'))
     return render_template('login.html', error=error)
 
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('scan'))
 
-@app.route('/scan')
+@app.route('/')
 def scan():
     fscan = Scanner()
-    dirs = ['/home/johan/Downloads', '/home/johan/Downloads']
-    return render_template('scan.html', dirs=dirs, items=fscan.scanFolder(path))
+    #dirs = ['/home/johan/Downloads', '/home/johan/Downloads']
+    dirs = fscan.getFolders(FOLDERFILE)
+    return render_template('scan.html', dirs=dirs, items=fscan.scanFolder(dirs))
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/folders', methods=['GET', 'POST'])
+def admin_folders():
+    fscan = Scanner()
+    folders = fscan.getFolders(FOLDERFILE)
+
+    if request.method == 'POST':
+        if fscan.setFolders(FOLDERFILE, request.form['folders']):
+            return redirect(url_for('scan'))
+        else:
+            flash('Could not write to file. Try again')
+            return render_template('admin_folders.html', folders=folders)
+    else:
+        return render_template('admin_folders.html', folders=folders)
 
 if __name__ == '__main__':
+    init_db()
     app.run()
+
+
+
