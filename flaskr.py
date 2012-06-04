@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-from sqlite3 import dbapi2 as sqlite3
 from contextlib import closing
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 
 from scan import Scanner
 
 #Configuration
-DATABASE = '/tmp/flaskr.db'
 DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
@@ -17,34 +15,6 @@ FOLDERFILE = './static/folders'
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
-
-def connect_db():
-    """Returns a new connection to the database."""
-    return sqlite3.connect(app.config['DATABASE'])
-
-def init_db():
-    """Creates the database tables."""
-    with closing(connect_db()) as db:
-	with app.open_resource('schema.sql') as f:
-	    db.cursor().executescript(f.read())
-	db.commit()
-
-@app.before_request
-def before_request():
-    """Make sure we are connected to the database each request."""
-    g.db = connect_db()
-
-@app.teardown_request
-def teardown_request(exception):
-    """Closes the database again at the end of the request."""
-    if hasattr(g, 'db'):
-	g.db.close()
-
-        #@app.route('/')
-#def show_entries():
-    #cur = g.db.execute('select title, text from entries order by id desc')
-    #entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
-    #return render_template('show_entries.html', entries=entries)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
@@ -101,7 +71,7 @@ def admin_folders():
         return render_template('admin_folders.html', folders=folders)
 
 if __name__ == '__main__':
-    init_db()
+    #    init_db()
     app.run()
 
 
