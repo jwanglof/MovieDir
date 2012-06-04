@@ -1,19 +1,41 @@
 <!doctype html>
 <html>
 <head>
-<title>Feeeeint!</title>
-<link href='static/style.css' rel='stylesheet' />
+<title>MovieDir</title>
+<link href='{{ url_for('static', filename='style.css') }}' rel='stylesheet' type='text/css' />
 <link href='http://fonts.googleapis.com/css?family=Questrial' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Quattrocento+Sans' rel='stylesheet' type='text/css'>
+<script type="text/javascript" src="{{ url_for('static', filename='JQuery.js') }}" charset='utf-8'></script> 
+<script>
+	$(document).ready (function () {
+	$('h2 > a').click(function () {
+	var index = $('h2 > a').index( $(this));
+	var effectElement = $('#content div').eq(index);
+	effectElement.slideToggle('fast');
+	});
+	});
+</script>
 </head>
 <body>
-
-	<div class='page'>
-		<h1>MovieDir</h1>
-
+	<div class='flash'>
 		{% for message in get_flashed_messages() %}
-		<div class='flash'>{{ message }}</div>
+		{{ message }}
 		{% endfor %}
+	</div>
+	<div class='page'>
+		<h1><a href='/'>MovieDir</a></h1>
+		{% if not session.logged_in %}
+		<a href='{{ url_for('login') }}'>Login</a>
+		{% else %}
+		<a href='{{ url_for('logout') }}'>Logout</a>
+		-
+		<a href='{{ url_for('admin_folders') }}'>Folders</a>
+		{% endif %}
+		-
+		<a href='{{ url_for('about') }}'>About</a>
+		---
+		Order by: Name (<a href='/'>Asc</a>, <a href='/desc'>Desc</a>)
+		<br />
 		{% block body %}{% endblock %}
 	</div>
 

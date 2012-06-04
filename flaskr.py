@@ -50,7 +50,13 @@ def scan():
     fscan = Scanner()
     #dirs = ['/home/johan/Downloads', '/home/johan/Downloads']
     dirs = fscan.getFolders(FOLDERFILE)
-    return render_template('scan.html', dirs=dirs, items=fscan.scanFolder(dirs))
+    return render_template('scan.html', dirs=dirs, items=fscan.scanFolder(dirs), order=False)
+
+@app.route('/desc')
+def scan_desc():
+    fscan = Scanner()
+    dirs = fscan.getFolders(FOLDERFILE)
+    return render_template('scan.html', dirs=dirs, items=fscan.scanFolder(dirs), order=True)
 
 @app.route('/about')
 def about():
@@ -63,6 +69,7 @@ def admin_folders():
 
     if request.method == 'POST':
         if fscan.setFolders(FOLDERFILE, request.form['folders']):
+            flash('Folders were successfully added')
             return redirect(url_for('scan'))
         else:
             flash('Could not write to file. Try again')
@@ -71,7 +78,6 @@ def admin_folders():
         return render_template('admin_folders.html', folders=folders)
 
 if __name__ == '__main__':
-    #    init_db()
     app.run()
 
 

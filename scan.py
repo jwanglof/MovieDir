@@ -2,6 +2,7 @@
 import os
 import re
 
+# Set to false to turn of debugger
 logger = True
 
 def logger(str):

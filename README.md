@@ -8,5 +8,5 @@ What to do:
 * JQuery - ADDED IN static/JQuery.js
 * Be able to show a folders content with an arrow - DONE
 * Search-able
-* Order-able
+* Order-able - DONE
 	

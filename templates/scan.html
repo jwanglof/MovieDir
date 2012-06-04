@@ -1,11 +1,15 @@
 {% extends 'layout.html' %}
 {% block body %}
 
-{% for dir in dirs %}
-<h2>{{ dir }}</h2>
-{% for item in items %}
-<dd>{{ item }}</dd>
-{% endfor %}
+{% for key, value in items|dictsort %}
+<div id='content'>
+	<h2><a href='#'>{{ key }}</a></h2>
+	<div class='item'>
+		{% for item in items[key]|sort(reverse=order) %}		
+		{{ item }} <br />
+		{% endfor %}
+	</div>
+</div>
 {% endfor %}
 
 {% endblock %}
